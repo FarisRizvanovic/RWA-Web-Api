@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EfCoreDialogsState">
+    <option name="keyValueStorage">
+      <map>
+        <entry key="Common:buildConfiguration" value="Debug" />
+        <entry key="Common:dbContextFolder" value="Context" />
+        <entry key="Common:dbContextName" value="ApplicationDbContext" />
+        <entry key="Common:generateOnConfiguring" value="true" />
+        <entry key="Common:noBuild" value="false" />
+        <entry key="Common:outputFolder" value="Models" />
+        <entry key="Common:provider" value="Pomelo.EntityFrameworkCore.MySql" />
+        <entry key="Common:useAttributes" value="true" />
+        <entry key="Common:useDatabaseNames" value="true" />
+        <entry key="Common:usePluralizer" value="true" />
+      </map>
+    </option>
+  </component>
+</project>
