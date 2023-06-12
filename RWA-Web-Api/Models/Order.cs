@@ -6,20 +6,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RWA_Web_Api.Models;
 
-[Index("user_id", Name = "user_id")]
+[Index("customer_id", Name = "customer_id")]
 public partial class Order
 {
     [Key]
     public int order_id { get; set; }
 
-    public int? user_id { get; set; }
-
-    public DateOnly? order_date { get; set; }
+    public int? customer_id { get; set; }
 
     [Precision(10, 2)]
     public decimal? total_amount { get; set; }
 
-    [ForeignKey("user_id")]
+    [Column(TypeName = "timestamp")]
+    public DateTime? created_at { get; set; }
+
+    [Column(TypeName = "timestamp")]
+    public DateTime? updated_at { get; set; }
+
+    [InverseProperty("order")]
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    [ForeignKey("customer_id")]
     [InverseProperty("Orders")]
-    public virtual UserAccount? user { get; set; }
+    public virtual Customer? customer { get; set; }
 }

@@ -6,18 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RWA_Web_Api.Models;
 
-[Index("product_id", Name = "product_id")]
-public partial class FeaturedProduct
+[Table("Newsletter")]
+public partial class Newsletter
 {
     [Key]
-    public int featured_id { get; set; }
+    public int email_id { get; set; }
 
-    public int? product_id { get; set; }
+    [StringLength(255)]
+    public string? email { get; set; }
 
     [Column(TypeName = "timestamp")]
     public DateTime? created_at { get; set; }
-
-    [ForeignKey("product_id")]
-    [InverseProperty("FeaturedProducts")]
-    public virtual Product? product { get; set; }
 }

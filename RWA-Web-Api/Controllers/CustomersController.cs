@@ -14,10 +14,34 @@ public class CustomersController : BaseController
     {
     }
 
-    [HttpGet(Name = "GetCategories")]
-    public async Task<IEnumerable<Category>> GetCategories()
+    
+    // [HttpGet("orderid={orderId}")]
+    // public async Task<IActionResult> GetCustomerNameForOrderId(int orderId)
+    // {
+    //     var order = await _dbContext.Orders
+    //         .Include(o => o.customer)
+    //         .FirstOrDefaultAsync(o => o.order_id == orderId);
+    //
+    //
+    //     
+    //     if (order == null)
+    //     {
+    //         NotFound();
+    //     }
+    //     
+    //     return Ok(order.customer.name);
+    // }
+    
+    [HttpGet("orderid={customerId}")]
+    public async Task<IActionResult> GetCustomerById(int customerId)
     {
-        var records = await _dbContext.Categories.ToListAsync();
-        return records;
+        var customer = await _dbContext.Customers.FindAsync(customerId);
+        
+        if (customer == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(customer);
     }
 }

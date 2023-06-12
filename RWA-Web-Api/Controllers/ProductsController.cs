@@ -16,14 +16,18 @@ public class ProductsController : BaseController
     {
     }
 
+    /**
+     * Gets All products
+     * TODO: ADD PAGINATION
+     */
     [HttpGet(Name = "GetProducts")]
-    public async Task<IEnumerable<Product>> GetProducts()
+    public async Task<IActionResult> GetProducts()
     {
         var records = await _dbContext.Products.ToListAsync();
-        return records;
+        return Ok(records);
     }
 
-
+    /*
     // TO SAVE DATA AS BLOBS IN MYSQL
     // // PUT: api/products/1/image
     // [HttpPut("{id}/image")]
@@ -63,7 +67,11 @@ public class ProductsController : BaseController
     //         return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating product image");
     //     }
     // }
-    //
+    */
+
+    /**
+     * Checks if the provided file is an image
+     */
     private static bool IsImage(IFormFile file)
     {
         if (file.ContentType.ToLower() != "image/jpg" &&
@@ -79,6 +87,9 @@ public class ProductsController : BaseController
         return true;
     }
 
+    /**
+     * Updates the image of a product with a given id
+     */
     [HttpPut("{id}/image")]
     public async Task<IActionResult> UpdateProductImage(int id, [FromForm] IFormFile? file)
     {
@@ -119,7 +130,9 @@ public class ProductsController : BaseController
         }
     }
 
-
+    /**
+     * Adds a new product with image
+     */
     [HttpPost]
     public async Task<IActionResult> AddProduct([FromForm] ProductWithImage productWithImage)
     {
@@ -130,6 +143,7 @@ public class ProductsController : BaseController
             isNew = productWithImage.IsNew,
             oldPrice = productWithImage.OldPrice,
             price = productWithImage.Price,
+            stock = productWithImage.Stock,
             description = productWithImage.Description,
             category_id = productWithImage.CategoryId,
             rating = productWithImage.Rating
@@ -165,13 +179,62 @@ public class ProductsController : BaseController
                 "An error occurred while updating product image");
         }
 
-        Console.WriteLine(product.image);
         // Save the product to the database
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync();
 
-        
-
         return Ok();
     }
+
+    /**
+     * Get number of products
+     */
+    [HttpGet]
+    public IActionResult GetProductCount()
+    {
+        try
+        {
+            var entryCount = _dbContext.Products.Count();
+            return Ok(entryCount);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while retrieving entry count.");
+        }
+    }
+
+    /**
+     * Get all products that are low on stock
+     */
+    [HttpGet("products/lowonstock/limit={limit}")]
+    public IActionResult GetProductsLowOnStock(int limit)
+    {
+        var products = _dbContext.Products.Where(p => p.stock < limit).ToList();
+        return Ok(products);
+    }
+
+    /**
+     * Get number of products low on stock
+     */
+    [HttpGet("products/lowonstockcount/limit={limit}")]
+    public IActionResult GetProductsLowOnStockCount(int limit)
+    {
+        var products = _dbContext.Products.Where(p => p.stock < limit).ToList().Count;
+        return Ok(products);
+    }
+
+    [HttpGet("product/id={productId}")]
+    public async Task<IActionResult> GetProductById(int productId)
+    {
+        var product = await _dbContext.Products.FindAsync(productId);
+
+        if (product==null)
+        {
+            NotFound();
+        }
+        Console.WriteLine(product.product_id);
+        
+        return Ok(product);
+    }
+
 }

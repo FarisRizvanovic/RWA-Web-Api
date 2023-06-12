@@ -22,11 +22,17 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<FeaturedProduct> FeaturedProducts { get; set; }
 
+    public virtual DbSet<Newsletter> Newsletters { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<UserAccount> UserAccounts { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<WebsiteContent> WebsiteContents { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -41,39 +47,90 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.category_id).HasName("PRIMARY");
+
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.customer_id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.user).WithMany(p => p.Customers).HasConstraintName("customer_ibfk_1");
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         modelBuilder.Entity<FeaturedProduct>(entity =>
         {
-            entity.HasKey(e => e.featured_product_id).HasName("PRIMARY");
+            entity.HasKey(e => e.featured_id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.product).WithMany(p => p.FeaturedProducts).HasConstraintName("featuredproduct_ibfk_1");
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.product).WithMany(p => p.FeaturedProducts).HasConstraintName("featuredproducts_ibfk_1");
+        });
+
+        modelBuilder.Entity<Newsletter>(entity =>
+        {
+            entity.HasKey(e => e.email_id).HasName("PRIMARY");
+
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
             entity.HasKey(e => e.order_id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.user).WithMany(p => p.Orders).HasConstraintName("orders_ibfk_1");
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.customer).WithMany(p => p.Orders).HasConstraintName("orders_ibfk_1");
+        });
+
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(e => e.order_item_id).HasName("PRIMARY");
+
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.order).WithMany(p => p.OrderItems).HasConstraintName("orderitems_ibfk_1");
+
+            entity.HasOne(d => d.product).WithMany(p => p.OrderItems).HasConstraintName("orderitems_ibfk_2");
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.product_id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.category).WithMany(p => p.Products).HasConstraintName("product_ibfk_1");
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.category).WithMany(p => p.Products).HasConstraintName("products_ibfk_1");
         });
 
-        modelBuilder.Entity<UserAccount>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.user_id).HasName("PRIMARY");
+            entity.HasKey(e => e.id).HasName("PRIMARY");
+        });
+
+        modelBuilder.Entity<WebsiteContent>(entity =>
+        {
+            entity.HasKey(e => e.content_id).HasName("PRIMARY");
+
+            entity.Property(e => e.created_at).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.updated_at)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         OnModelCreatingPartial(modelBuilder);
