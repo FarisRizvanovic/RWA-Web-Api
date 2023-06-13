@@ -1,45 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
+using RWA_Web_Api.Interfaces;
 using RWA_Web_Api.Models;
 
 namespace RWA_Web_Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class CustomersController : BaseController
+public class CustomersController : ControllerBase
 {
-    public CustomersController(ApplicationDbContext dbContext, ILogger<CustomersController> logger) : base(dbContext,
-        logger)
+    private readonly ILogger<CustomersController> _logger;
+    private readonly ICustomerRepository _customerRepository;
+
+    public CustomersController(ILogger<CustomersController> logger, ICustomerRepository customerRepository)
     {
+        _logger = logger;
+        _customerRepository = customerRepository;
     }
 
-    
-    // [HttpGet("orderid={orderId}")]
-    // public async Task<IActionResult> GetCustomerNameForOrderId(int orderId)
-    // {
-    //     var order = await _dbContext.Orders
-    //         .Include(o => o.customer)
-    //         .FirstOrDefaultAsync(o => o.order_id == orderId);
-    //
-    //
-    //     
-    //     if (order == null)
-    //     {
-    //         NotFound();
-    //     }
-    //     
-    //     return Ok(order.customer.name);
-    // }
-    
     [HttpGet("orderid={customerId}")]
-    public async Task<IActionResult> GetCustomerById(int customerId)
+    [ProducesResponseType(200, Type = typeof(Customer))]
+    public IActionResult GetCustomerById(int customerId)
     {
-        var customer = await _dbContext.Customers.FindAsync(customerId);
-        
+        var customer = _customerRepository.GetCustomerById(customerId);
+        Console.WriteLine("TEST " + customerId);
         if (customer == null)
         {
-            return NotFound();
+            return NotFound("Customer with the provided id not found.");
         }
         
         return Ok(customer);
