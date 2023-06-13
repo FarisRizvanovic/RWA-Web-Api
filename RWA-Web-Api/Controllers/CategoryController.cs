@@ -33,4 +33,18 @@ public class CategoryController : BaseController
         var records = await _dbContext.Categories.ToListAsync();
         return records;
     }
+    
+    [HttpGet()]
+    public async Task<IActionResult> GetCategoriesWithNumberOfProducts()
+    {
+        var categories =await _dbContext.Categories.Include(c => c.Products)
+            .Select(c => new { c.category_id, c.name, product_count = c.Products.Count }).ToListAsync();
+
+        if (categories == null)
+        {
+            NotFound();
+        }
+
+        return Ok(categories);
+    }
 }

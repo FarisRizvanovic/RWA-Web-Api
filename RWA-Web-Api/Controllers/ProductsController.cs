@@ -1,119 +1,77 @@
-using System.Globalization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.CompilerServices;
 using RWA_Web_Api.Context;
+using RWA_Web_Api.Interfaces;
 using RWA_Web_Api.Models;
 using RWA_Web_Api.Models.AdditionalModels;
+using RWA_Web_Api.Util;
 
 namespace RWA_Web_Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class ProductsController : BaseController
+public class ProductsController : ControllerBase
 {
-    public ProductsController(ApplicationDbContext dbContext, ILogger<ProductsController> logger) : base(dbContext,
-        logger)
+    private readonly ILogger<ProductsController> _logger;
+    private readonly IProductRepository _productRepository;
+
+    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository)
     {
+        _logger = logger;
+        _productRepository = productRepository;
     }
 
     /**
      * Gets All products
      * TODO: ADD PAGINATION
      */
-    [HttpGet(Name = "GetProducts")]
-    public async Task<IActionResult> GetProducts()
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
+    public IActionResult getProducts()
     {
-        var records = await _dbContext.Products.ToListAsync();
-        return Ok(records);
-    }
+        var products = _productRepository.GetProducts();
 
-    /*
-    // TO SAVE DATA AS BLOBS IN MYSQL
-    // // PUT: api/products/1/image
-    // [HttpPut("{id}/image")]
-    // public async Task<IActionResult> UpdateProductImage(int id, [FromForm] IFormFile file)
-    // {
-    //     try
-    //     {
-    //         var product = await _dbContext.Products.FindAsync(id);
-    //         if (product == null)
-    //         {
-    //             return NotFound();
-    //         }
-    //
-    //         // Check if the uploaded file exists and is an image
-    //         if (file != null && file.Length > 0 && IsImage(file))
-    //         {
-    //             using (var memoryStream = new MemoryStream())
-    //             {
-    //                 await file.CopyToAsync(memoryStream);
-    //                 
-    //                 var imageBytes = memoryStream.ToArray();
-    //
-    //                 product.image = imageBytes;
-    //                 await _dbContext.SaveChangesAsync();
-    //             }
-    //         }
-    //         else
-    //         {
-    //             return BadRequest("Invalid file or file format");
-    //         }
-    //
-    //         return NoContent();
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Failed to update product image");
-    //         return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating product image");
-    //     }
-    // }
-    */
-
-    /**
-     * Checks if the provided file is an image
-     */
-    private static bool IsImage(IFormFile file)
-    {
-        if (file.ContentType.ToLower() != "image/jpg" &&
-            file.ContentType.ToLower() != "image/jpeg" &&
-            file.ContentType.ToLower() != "image/pjpeg" &&
-            file.ContentType.ToLower() != "image/gif" &&
-            file.ContentType.ToLower() != "image/x-png" &&
-            file.ContentType.ToLower() != "image/png")
+        if (!ModelState.IsValid)
         {
-            return false;
+            return BadRequest(ModelState);
         }
 
-        return true;
+        return Ok(products);
     }
 
     /**
      * Updates the image of a product with a given id
      */
     [HttpPut("{id}/image")]
-    public async Task<IActionResult> UpdateProductImage(int id, [FromForm] IFormFile? file)
+    public IActionResult UpdateProductImage(int id, [FromForm] ImageFile? imageFile)
     {
         try
         {
-            var product = await _dbContext.Products.FindAsync(id);
+            var product = _productRepository.GetProductById(id);
+            var file = imageFile.file;
             if (product == null)
             {
-                return NotFound();
+                return NotFound("User with given id not found.");
+            }
+
+            if (file == null)
+            {
+                return BadRequest("Image not found.");
             }
 
             // Check if the uploaded file exists and is an image
-            if (file != null && file.Length > 0 && IsImage(file))
+            if (file != null && file.Length > 0 && FileUtils.IsImage(file))
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 var filePath = Path.Combine("images", fileName);
 
-                await using (var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await file.CopyToAsync(stream);
+                    file.CopyToAsync(stream);
                 }
 
-                product.image = filePath;
-                await _dbContext.SaveChangesAsync();
+                _productRepository.UpdateProductImage(filePath, id);
             }
             else
             {
@@ -134,7 +92,7 @@ public class ProductsController : BaseController
      * Adds a new product with image
      */
     [HttpPost]
-    public async Task<IActionResult> AddProduct([FromForm] ProductWithImage productWithImage)
+    public IActionResult AddProduct([FromForm] ProductWithImage productWithImage)
     {
         // Extract the product details
         var product = new Product
@@ -155,14 +113,14 @@ public class ProductsController : BaseController
         try
         {
             // Check if the uploaded file exists and is an image
-            if (file != null && file.Length > 0 && IsImage(file))
+            if (file != null && file.Length > 0 && FileUtils.IsImage(file))
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 var filePath = Path.Combine("images", fileName);
 
-                await using (var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await file.CopyToAsync(stream);
+                    file.CopyToAsync(stream);
                 }
 
                 product.image = filePath;
@@ -180,36 +138,29 @@ public class ProductsController : BaseController
         }
 
         // Save the product to the database
-        _dbContext.Products.Add(product);
-        await _dbContext.SaveChangesAsync();
+        _productRepository.AddProduct(product);
 
-        return Ok();
+        return Ok("Product added successfully");
     }
 
     /**
      * Get number of products
      */
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductCount()
     {
-        try
-        {
-            var entryCount = _dbContext.Products.Count();
-            return Ok(entryCount);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while retrieving entry count.");
-        }
+        return Ok(_productRepository.GetProductCount());
     }
 
     /**
      * Get all products that are low on stock
      */
     [HttpGet("products/lowonstock/limit={limit}")]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
     public IActionResult GetProductsLowOnStock(int limit)
     {
-        var products = _dbContext.Products.Where(p => p.stock < limit).ToList();
+        var products = _productRepository.GetProductsLowOnStock(limit);
         return Ok(products);
     }
 
@@ -217,24 +168,31 @@ public class ProductsController : BaseController
      * Get number of products low on stock
      */
     [HttpGet("products/lowonstockcount/limit={limit}")]
+    [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductsLowOnStockCount(int limit)
     {
-        var products = _dbContext.Products.Where(p => p.stock < limit).ToList().Count;
-        return Ok(products);
+        var count = _productRepository.GetNumberOfProductLowOnStock(limit);
+        return Ok(count);
     }
 
+    /**
+     * Gets product by Id
+     */
     [HttpGet("product/id={productId}")]
-    public async Task<IActionResult> GetProductById(int productId)
+    [ProducesResponseType(200, Type = typeof(Product))]
+    public IActionResult GetProductById(int productId)
     {
-        var product = await _dbContext.Products.FindAsync(productId);
+        var product = _productRepository.GetProductById(productId);
 
-        if (product==null)
+        if (product == null)
         {
-            NotFound();
+            NotFound("Product with provided id not found.");
         }
-        Console.WriteLine(product.product_id);
-        
+
         return Ok(product);
     }
 
+    /**
+     * Checks if the provided file is an image
+     */
 }
