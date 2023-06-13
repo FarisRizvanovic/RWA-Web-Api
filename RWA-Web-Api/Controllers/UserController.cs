@@ -8,10 +8,10 @@ namespace RWA_Web_Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class UserController : ControllerBase
 {
-    private readonly ILogger<BaseController> _logger;
+    private readonly ILogger<UserController> _logger;
     private readonly IUserRepository _userRepository;
 
-    public UserController(ILogger<BaseController> logger, IUserRepository userRepository)
+    public UserController(ILogger<UserController> logger, IUserRepository userRepository)
     {
         _logger = logger;
         _userRepository = userRepository;

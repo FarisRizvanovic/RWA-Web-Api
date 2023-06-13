@@ -11,10 +11,10 @@ namespace RWA_Web_Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class CategoryController : ControllerBase
 {
-    private readonly ILogger<BaseController> _logger;
+    private readonly ILogger<CategoryController> _logger;
     private readonly ICategoryRepository _categoryRepository;
 
-    public CategoryController(ILogger<BaseController> logger, ICategoryRepository categoryRepository)
+    public CategoryController(ILogger<CategoryController> logger, ICategoryRepository categoryRepository)
     {
         _logger = logger;
         _categoryRepository = categoryRepository;

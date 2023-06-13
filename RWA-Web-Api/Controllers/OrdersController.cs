@@ -10,10 +10,10 @@ namespace RWA_Web_Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class OrdersController : ControllerBase
 {
-    private readonly ILogger<BaseController> _logger;
+    private readonly ILogger<OrdersController> _logger;
     private readonly IOrdersRepository _ordersRepository;
 
-    public OrdersController(ILogger<BaseController> logger, IOrdersRepository ordersRepository)
+    public OrdersController(ILogger<OrdersController> logger, IOrdersRepository ordersRepository)
     {
         _logger = logger;
         _ordersRepository = ordersRepository;
