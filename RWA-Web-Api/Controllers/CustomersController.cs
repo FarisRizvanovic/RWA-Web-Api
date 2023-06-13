@@ -21,6 +21,7 @@ public class CustomersController : ControllerBase
 
     [HttpGet("orderid={customerId}")]
     [ProducesResponseType(200, Type = typeof(Customer))]
+    [ProducesResponseType(404)]
     public IActionResult GetCustomerById(int customerId)
     {
         var customer = _customerRepository.GetCustomerById(customerId);

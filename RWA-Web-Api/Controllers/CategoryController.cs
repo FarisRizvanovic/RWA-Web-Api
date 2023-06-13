@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
@@ -30,27 +31,30 @@ public class CategoryController : ControllerBase
 
     [HttpGet(Name = "GetCategories")]
     [ProducesResponseType(200, Type = typeof(Category))]
-    public IEnumerable<Category> GetCategories()
+    [ProducesResponseType(400)]
+    public IActionResult GetCategories()
     {
         var categories = _categoryRepository.getCategories();
 
         if (categories==null)
         {
-            
+            return BadRequest();
         }
         
-        return categories;
+        return Ok(categories);
     }
 
     [HttpGet()]
     [ProducesResponseType(200, Type = typeof(CategoryWithItemNumber))]
+    
+    [ProducesResponseType(400)]
     public async Task<IActionResult> GetCategoriesWithNumberOfProducts()
     {
         var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts();
 
         if (categoriesWithItemNumber == null)
         {
-            NotFound("No categories");
+            return BadRequest();
         }
 
         return Ok(categoriesWithItemNumber);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
@@ -21,10 +22,16 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(Order))]
+    [ProducesResponseType(400)]
     public  IActionResult GetOrders()
     {
         var orders = _ordersRepository.GetOrders();
 
+        if (orders == null)
+        {
+            BadRequest();
+        }
+        
         return Ok(orders);
     }
 }

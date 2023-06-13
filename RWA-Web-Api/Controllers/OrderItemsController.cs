@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RWA_Web_Api.Context;
 using RWA_Web_Api.Interfaces;
+using RWA_Web_Api.Models;
 
 namespace RWA_Web_Api.Controllers;
 
@@ -18,6 +19,8 @@ public class OrderItemsController : ControllerBase
     }
 
     [HttpGet("orderitems/orderid={orderId}")]
+    [ProducesResponseType(200, Type = typeof(OrderItem))]
+    [ProducesResponseType(404)]
     public IActionResult GetOrderItems(int orderId)
     {
         var orderItems = _orderItemsRepository.GetOrderItems(orderId);

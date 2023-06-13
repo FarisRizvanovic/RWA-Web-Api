@@ -28,6 +28,7 @@ public class ProductsController : ControllerBase
      */
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
+    [ProducesResponseType(400)]
     public IActionResult getProducts()
     {
         var products = _productRepository.GetProducts();
@@ -44,6 +45,9 @@ public class ProductsController : ControllerBase
      * Updates the image of a product with a given id
      */
     [HttpPut("{id}/image")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public IActionResult UpdateProductImage(int id, [FromForm] ImageFile? imageFile)
     {
         try
@@ -78,7 +82,7 @@ public class ProductsController : ControllerBase
                 return BadRequest("Invalid file or file format");
             }
 
-            return NoContent();
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -92,6 +96,8 @@ public class ProductsController : ControllerBase
      * Adds a new product with image
      */
     [HttpPost]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     public IActionResult AddProduct([FromForm] ProductWithImage productWithImage)
     {
         // Extract the product details
@@ -180,6 +186,7 @@ public class ProductsController : ControllerBase
      */
     [HttpGet("product/id={productId}")]
     [ProducesResponseType(200, Type = typeof(Product))]
+    [ProducesResponseType(404)]
     public IActionResult GetProductById(int productId)
     {
         var product = _productRepository.GetProductById(productId);
@@ -191,8 +198,5 @@ public class ProductsController : ControllerBase
 
         return Ok(product);
     }
-
-    /**
-     * Checks if the provided file is an image
-     */
+    
 }
