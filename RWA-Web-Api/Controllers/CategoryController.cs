@@ -1,50 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
+using RWA_Web_Api.Interfaces;
 using RWA_Web_Api.Models;
+using RWA_Web_Api.Models.AdditionalModels;
 
 namespace RWA_Web_Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class CategoryController : BaseController
+public class CategoryController : ControllerBase
 {
-    public CategoryController(ApplicationDbContext dbContext, ILogger<BaseController> logger) : base(dbContext, logger)
+    private readonly ILogger<BaseController> _logger;
+    private readonly ICategoryRepository _categoryRepository;
+
+    public CategoryController(ILogger<BaseController> logger, ICategoryRepository categoryRepository)
     {
+        _logger = logger;
+        _categoryRepository = categoryRepository;
     }
 
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetCategoryCount()
     {
-        try
-        {
-            var entryCount = _dbContext.Categories.Count();
-            return Ok(entryCount);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, "An error occurred while retrieving entry count.");
-        }
+        var categoryCount = _categoryRepository.GetCategoryCount();
+        return Ok(categoryCount);
     }
-    
+
     [HttpGet(Name = "GetCategories")]
-    public async Task<IEnumerable<Category>> GetCategories()
+    [ProducesResponseType(200, Type = typeof(Category))]
+    public IEnumerable<Category> GetCategories()
     {
-        var records = await _dbContext.Categories.ToListAsync();
-        return records;
+        var categories = _categoryRepository.getCategories();
+
+        if (categories==null)
+        {
+            
+        }
+        
+        return categories;
     }
-    
+
     [HttpGet()]
+    [ProducesResponseType(200, Type = typeof(CategoryWithItemNumber))]
     public async Task<IActionResult> GetCategoriesWithNumberOfProducts()
     {
-        var categories =await _dbContext.Categories.Include(c => c.Products)
-            .Select(c => new { c.category_id, c.name, product_count = c.Products.Count }).ToListAsync();
+        var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts();
 
-        if (categories == null)
+        if (categoriesWithItemNumber == null)
         {
-            NotFound();
+            NotFound("No categories");
         }
 
-        return Ok(categories);
+        return Ok(categoriesWithItemNumber);
     }
 }

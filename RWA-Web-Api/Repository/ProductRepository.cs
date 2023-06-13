@@ -10,8 +10,7 @@ namespace RWA_Web_Api.Repository;
 public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _dbContext;
-
-
+    
     public ProductRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
