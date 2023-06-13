@@ -1,20 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RWA_Web_Api.Context;
+using RWA_Web_Api.Interfaces;
+using RWA_Web_Api.Models;
+
 
 namespace RWA_Web_Api.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class UserController : BaseController
+public class UserController : ControllerBase
 {
-    public UserController(ApplicationDbContext dbContext, ILogger<BaseController> logger) : base(dbContext, logger)
+    private readonly ILogger<BaseController> _logger;
+    private readonly IUserRepository _userRepository;
+
+    public UserController(ILogger<BaseController> logger, IUserRepository userRepository)
     {
+        _logger = logger;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUsers()
+    [ProducesResponseType(200, Type = typeof(User))]
+    public IActionResult GetUsers()
     {
-        var users = await _dbContext.Users.ToListAsync();
+        var users = _userRepository.GetUsers();
 
         return Ok(users);
     }
