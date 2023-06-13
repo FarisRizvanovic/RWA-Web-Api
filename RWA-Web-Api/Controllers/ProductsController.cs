@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
@@ -15,11 +16,14 @@ public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;
 
-    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository)
+    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository, IMapper
+        mapper)
     {
         _logger = logger;
         _productRepository = productRepository;
+        _mapper = mapper;
     }
 
     /**
@@ -27,11 +31,11 @@ public class ProductsController : ControllerBase
      * TODO: ADD PAGINATION
      */
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<ProductDto>))]
     [ProducesResponseType(400)]
     public IActionResult getProducts()
     {
-        var products = _productRepository.GetProducts();
+        var products = _mapper.Map<List<ProductDto>>(_productRepository.GetProducts());
 
         if (!ModelState.IsValid)
         {
@@ -185,11 +189,11 @@ public class ProductsController : ControllerBase
      * Gets product by Id
      */
     [HttpGet("product/id={productId}")]
-    [ProducesResponseType(200, Type = typeof(Product))]
+    [ProducesResponseType(200, Type = typeof(ProductDto))]
     [ProducesResponseType(404)]
     public IActionResult GetProductById(int productId)
     {
-        var product = _productRepository.GetProductById(productId);
+        var product = _mapper.Map<ProductDto>(_productRepository.GetProductById(productId));
 
         if (product == null)
         {
@@ -198,5 +202,4 @@ public class ProductsController : ControllerBase
 
         return Ok(product);
     }
-    
 }

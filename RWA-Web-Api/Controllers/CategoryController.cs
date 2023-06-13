@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,13 @@ public class CategoryController : ControllerBase
 {
     private readonly ILogger<CategoryController> _logger;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMapper _mapper;
 
-    public CategoryController(ILogger<CategoryController> logger, ICategoryRepository categoryRepository)
+    public CategoryController(ILogger<CategoryController> logger, ICategoryRepository categoryRepository, IMapper mapper)
     {
         _logger = logger;
         _categoryRepository = categoryRepository;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -30,11 +33,11 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet(Name = "GetCategories")]
-    [ProducesResponseType(200, Type = typeof(Category))]
+    [ProducesResponseType(200, Type = typeof(CategoryDto))]
     [ProducesResponseType(400)]
     public IActionResult GetCategories()
     {
-        var categories = _categoryRepository.getCategories();
+        var categories = _mapper.Map<List<CategoryDto>>(_categoryRepository.getCategories());
 
         if (categories==null)
         {
@@ -48,14 +51,9 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(200, Type = typeof(CategoryWithItemNumber))]
     
     [ProducesResponseType(400)]
-    public async Task<IActionResult> GetCategoriesWithNumberOfProducts()
+    public IActionResult GetCategoriesWithNumberOfProducts()
     {
         var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts();
-
-        if (categoriesWithItemNumber == null)
-        {
-            return BadRequest();
-        }
 
         return Ok(categoriesWithItemNumber);
     }

@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors();
 builder.Services.AddDirectoryBrowser();
 builder.Services.AddMvc();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // DI
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
