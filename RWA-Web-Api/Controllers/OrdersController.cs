@@ -1,21 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
+using RWA_Web_Api.Interfaces;
 
 namespace RWA_Web_Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class OrdersController : BaseController
+public class OrdersController : ControllerBase
 {
-    public OrdersController(ApplicationDbContext dbContext, ILogger<BaseController> logger) : base(dbContext, logger)
+    private readonly IOrdersRepository _ordersRepository;
+
+    public OrdersController(ILogger<BaseController> logger, IOrdersRepository ordersRepository)
     {
+        _ordersRepository = ordersRepository;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders()
+    public  IActionResult GetOrders()
     {
-        var orders = await _dbContext.Orders.ToListAsync();
+        var orders = _ordersRepository.GetOrders();
 
         return Ok(orders);
     }
