@@ -6,9 +6,11 @@ namespace RWA_Web_Api.Interfaces;
 
 public interface ICategoryRepository
 {
-    ICollection<Category> getCategories();
+    IEnumerable<Category> GetAllCategories();
+
+    PaginationResult<Category> GetCategories(int page, string searchTerm);
 
     int GetCategoryCount();
 
-    IEnumerable<CategoryWithItemNumber> GetCategoriesWithNumberOfProducts();
+    PaginationResult<CategoryWithItemNumber> GetCategoriesWithNumberOfProducts(int page, string searchTerm);
 }

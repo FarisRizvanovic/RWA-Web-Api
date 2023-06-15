@@ -17,14 +17,15 @@ public class CategoryController : ControllerBase
     private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
 
-    public CategoryController(ILogger<CategoryController> logger, ICategoryRepository categoryRepository, IMapper mapper)
+    public CategoryController(ILogger<CategoryController> logger, ICategoryRepository categoryRepository,
+        IMapper mapper)
     {
         _logger = logger;
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
 
-    [HttpGet]
+    [HttpGet("/categories/count")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetCategoryCount()
     {
@@ -32,29 +33,60 @@ public class CategoryController : ControllerBase
         return Ok(categoryCount);
     }
 
-    [HttpGet(Name = "GetCategories")]
+    [HttpGet("/categories")]
     [ProducesResponseType(200, Type = typeof(CategoryDto))]
     [ProducesResponseType(400)]
-    public IActionResult GetCategories()
+    public IActionResult GetAllCategories()
     {
-        var categories = _mapper.Map<List<CategoryDto>>(_categoryRepository.getCategories());
+        var categories = _mapper.Map<List<CategoryDto>>(_categoryRepository.GetAllCategories());
 
-        if (categories==null)
+        if (categories == null)
         {
             return BadRequest();
         }
-        
+
         return Ok(categories);
     }
 
-    [HttpGet()]
-    [ProducesResponseType(200, Type = typeof(CategoryWithItemNumber))]
-    
+    [HttpGet("/categories/itemcount/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<CategoryWithItemNumber>))]
     [ProducesResponseType(400)]
-    public IActionResult GetCategoriesWithNumberOfProducts()
+    public IActionResult GetCategoriesWithNumberOfProducts(int page, string? searchTerm = "")
     {
-        var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts();
-
+        var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts(page, searchTerm);
+    
         return Ok(categoriesWithItemNumber);
+    }
+
+
+    [HttpGet("/categories/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<CategoryDto>))]
+    [ProducesResponseType(400)]
+    public IActionResult GetCategories(int page, string? searchTerm = "")
+    {
+        if (page <= 0)
+        {
+            return BadRequest("Invalid page.");
+        }
+
+        var paginationResult = _categoryRepository.GetCategories(page, searchTerm);
+
+        var categoriesDtos = _mapper.Map<List<CategoryDto>>(paginationResult.Items);
+
+        if (categoriesDtos == null)
+        {
+            return BadRequest();
+        }
+
+        var result = new PaginationResult<CategoryDto>()
+        {
+            Page = paginationResult.Page,
+            PageSize = paginationResult.PageSize,
+            TotalItems = paginationResult.TotalItems,
+            TotalPages = paginationResult.TotalPages,
+            Items = categoriesDtos
+        };
+
+        return Ok(result);
     }
 }
