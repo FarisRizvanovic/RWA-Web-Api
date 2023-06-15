@@ -2,9 +2,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RWA_Web_Api.Interfaces;
 using RWA_Web_Api.Models;
+using RWA_Web_Api.Models.AdditionalModels;
 
 
 namespace RWA_Web_Api.Controllers;
+
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class UserController : ControllerBase
@@ -20,13 +22,33 @@ public class UserController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
-    [ProducesResponseType(200, Type = typeof(UserDto))]
-    public IActionResult GetUsers()
+    [HttpGet("/users/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<UserDto>))]
+    public IActionResult GetUsers(int page, string? searchTerm)
     {
-        var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
+        if (page <= 0)
+        {
+            return BadRequest("Invalid page");
+        }
+
+        var paginationResult = _userRepository.GetUsers(page, searchTerm);
+
+        if (page > paginationResult.TotalPages)
+        {
+            return NotFound();
+        }
+
+        var users = _mapper.Map<List<UserDto>>(paginationResult.Items);
+
+        var result = new PaginationResult<UserDto>()
+        {
+            Page = paginationResult.Page,
+            PageSize = paginationResult.PageSize,
+            TotalItems = paginationResult.TotalItems,
+            TotalPages = paginationResult.TotalPages,
+            Items = users
+        };
 
         return Ok(users);
     }
-
 }
