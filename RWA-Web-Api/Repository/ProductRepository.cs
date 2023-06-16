@@ -11,6 +11,7 @@ public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _dbContext;
     readonly int _pageSize = 10;
+
     public ProductRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
@@ -43,6 +44,34 @@ public class ProductRepository : IProductRepository
         };
     }
 
+    public PaginationResult<Product> GetProductsByCategory(int page, int categoryId, string? searchTerm)
+    {
+        var query = _dbContext.Products
+            .Where(p => p.category_id == categoryId);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(p => p.title.Contains(searchTerm));
+        }
+
+        int totalItems = query.Count();
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
+
+        var products = query
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+
+        return new PaginationResult<Product>()
+        {
+            Page = page,
+            PageSize = _pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            Items = products
+        };
+    }
+
     public Product? GetProductById(int productId)
     {
         return _dbContext.Products.Find(productId);
@@ -50,8 +79,8 @@ public class ProductRepository : IProductRepository
 
     public void UpdateProductImage(string imageUri, int productId)
     {
-        var product =  _dbContext.Products.Find(productId);
-        product.image = imageUri; 
+        var product = _dbContext.Products.Find(productId);
+        product.image = imageUri;
         _dbContext.SaveChangesAsync();
     }
 

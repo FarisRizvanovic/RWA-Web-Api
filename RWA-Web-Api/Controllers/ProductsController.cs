@@ -16,19 +16,20 @@ public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductRepository _productRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
 
-    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository, IMapper
+    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper
         mapper)
     {
         _logger = logger;
         _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
 
     /**
      * Gets All products
-     * TODO: ADD PAGINATION
      */
     [HttpGet("/products/{page}/{searchTerm?}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<ProductDto>))]
@@ -42,7 +43,48 @@ public class ProductsController : ControllerBase
 
         var paginationResponse = _productRepository.GetProducts(page, searchTerm);
 
-        if (page > paginationResponse.TotalPages)
+        if (page > paginationResponse.TotalPages && paginationResponse.TotalPages != 0)
+        {
+            return NotFound();
+        }
+
+        var products = _mapper.Map<List<ProductDto>>(paginationResponse.Items);
+
+        var result = new PaginationResult<ProductDto>()
+        {
+            Page = paginationResponse.Page,
+            PageSize = paginationResponse.PageSize,
+            TotalItems = paginationResponse.TotalItems,
+            TotalPages = paginationResponse.TotalPages,
+            Items = products
+        };
+
+        return Ok(result);
+    }
+
+    /**
+     * Gets All products by categoryId
+     */
+    [HttpGet("/products/bycategory/{categoryId}/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<ProductDto>))]
+    [ProducesResponseType(400)]
+    public IActionResult GetProducts(int categoryId, int page, string? searchTerm = "")
+    {
+        if (page <= 0)
+        {
+            return BadRequest("Invalid page number");
+        }
+
+        bool categoryExists = _categoryRepository.DoesACategoryExist(categoryId);
+
+        if (!categoryExists)
+        {
+            return NotFound();
+        }
+
+        var paginationResponse = _productRepository.GetProductsByCategory(page, categoryId, searchTerm);
+
+        if (page > paginationResponse.TotalPages && paginationResponse.TotalPages != 0)
         {
             return NotFound();
         }
@@ -192,7 +234,7 @@ public class ProductsController : ControllerBase
         }
 
         var paginationResult = _productRepository.GetProductsLowOnStock(limit, page, searchTerm);
-        
+
         if (page > paginationResult.TotalPages)
         {
             return NotFound();

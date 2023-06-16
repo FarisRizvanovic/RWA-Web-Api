@@ -13,4 +13,6 @@ public interface ICategoryRepository
     int GetCategoryCount();
 
     PaginationResult<CategoryWithItemNumber> GetCategoriesWithNumberOfProducts(int page, string searchTerm);
+
+    bool DoesACategoryExist(int categoryId);
 }

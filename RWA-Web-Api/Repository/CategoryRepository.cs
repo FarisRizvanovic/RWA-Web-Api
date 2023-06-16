@@ -62,7 +62,6 @@ public class CategoryRepository : ICategoryRepository
             query = _dbContext.Categories.Include(c => c.Products)
                 .Where(c => c.name.Contains(searchTerm))
                 .Select(c => new CategoryWithItemNumber(c.category_id, c.name, c.Products.Count));
-            
         }
 
         int totalItems = query.Count();
@@ -80,5 +79,10 @@ public class CategoryRepository : ICategoryRepository
             TotalPages = totalPages,
             Items = categoriesWithItemNumber
         };
+    }
+
+    public bool DoesACategoryExist(int categoryId)
+    {
+        return _dbContext.Categories.Any(c => c.category_id == categoryId);
     }
 }
