@@ -9,7 +9,7 @@ namespace RWA_Web_Api.Repository;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    private int pageSize = 5;
+    private readonly int _pageSize = 5;
 
     public CategoryRepository(ApplicationDbContext dbContext)
     {
@@ -31,11 +31,11 @@ public class CategoryRepository : ICategoryRepository
         }
 
         int totalItems = query.Count();
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
         var categories = query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
             .ToList();
 
         return new PaginationResult<Category>()
@@ -66,11 +66,11 @@ public class CategoryRepository : ICategoryRepository
         }
 
         int totalItems = query.Count();
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
         var categoriesWithItemNumber = query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
             .ToList();
 
         return new PaginationResult<CategoryWithItemNumber>()

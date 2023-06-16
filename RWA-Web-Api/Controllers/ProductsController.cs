@@ -30,25 +30,41 @@ public class ProductsController : ControllerBase
      * Gets All products
      * TODO: ADD PAGINATION
      */
-    [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<ProductDto>))]
+    [HttpGet("/products/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<ProductDto>))]
     [ProducesResponseType(400)]
-    public IActionResult getProducts()
+    public IActionResult GetProducts(int page, string? searchTerm = "")
     {
-        var products = _mapper.Map<List<ProductDto>>(_productRepository.GetProducts());
-
-        if (!ModelState.IsValid)
+        if (page <= 0)
         {
-            return BadRequest(ModelState);
+            return BadRequest("Invalid page number");
         }
 
-        return Ok(products);
+        var paginationResponse = _productRepository.GetProducts(page, searchTerm);
+
+        if (page > paginationResponse.TotalPages)
+        {
+            return NotFound();
+        }
+
+        var products = _mapper.Map<List<ProductDto>>(paginationResponse.Items);
+
+        var result = new PaginationResult<ProductDto>()
+        {
+            Page = paginationResponse.Page,
+            PageSize = paginationResponse.PageSize,
+            TotalItems = paginationResponse.TotalItems,
+            TotalPages = paginationResponse.TotalPages,
+            Items = products
+        };
+
+        return Ok(result);
     }
 
     /**
      * Updates the image of a product with a given id
      */
-    [HttpPut("{id}/image")]
+    [HttpPut("/products/{id}/image")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
@@ -99,7 +115,7 @@ public class ProductsController : ControllerBase
     /**
      * Adds a new product with image
      */
-    [HttpPost]
+    [HttpPost("/products")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
     public IActionResult AddProduct([FromForm] ProductWithImage productWithImage)
@@ -156,7 +172,7 @@ public class ProductsController : ControllerBase
     /**
      * Get number of products
      */
-    [HttpGet]
+    [HttpGet("/products/count")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductCount()
     {
@@ -166,18 +182,40 @@ public class ProductsController : ControllerBase
     /**
      * Get all products that are low on stock
      */
-    [HttpGet("products/lowonstock/limit={limit}")]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
-    public IActionResult GetProductsLowOnStock(int limit)
+    [HttpGet("/products/lowonstock/{limit}/{page}/{searchTerm?}")]
+    [ProducesResponseType(200, Type = typeof(PaginationResult<ProductDto>))]
+    public IActionResult GetProductsLowOnStock(int limit, int page, string? searchTerm)
     {
-        var products = _productRepository.GetProductsLowOnStock(limit);
-        return Ok(products);
+        if (page <= 0)
+        {
+            return BadRequest("Invalid page number");
+        }
+
+        var paginationResult = _productRepository.GetProductsLowOnStock(limit, page, searchTerm);
+        
+        if (page > paginationResult.TotalPages)
+        {
+            return NotFound();
+        }
+
+        var products = _mapper.Map<List<ProductDto>>(paginationResult.Items);
+
+        var result = new PaginationResult<ProductDto>()
+        {
+            Page = paginationResult.Page,
+            PageSize = paginationResult.PageSize,
+            TotalItems = paginationResult.TotalItems,
+            TotalPages = paginationResult.TotalPages,
+            Items = products
+        };
+
+        return Ok(result);
     }
 
     /**
      * Get number of products low on stock
      */
-    [HttpGet("products/lowonstockcount/limit={limit}")]
+    [HttpGet("/products/lowonstock/count/{limit}")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductsLowOnStockCount(int limit)
     {
@@ -188,7 +226,7 @@ public class ProductsController : ControllerBase
     /**
      * Gets product by Id
      */
-    [HttpGet("product/id={productId}")]
+    [HttpGet("/product/{productId}")]
     [ProducesResponseType(200, Type = typeof(ProductDto))]
     [ProducesResponseType(404)]
     public IActionResult GetProductById(int productId)

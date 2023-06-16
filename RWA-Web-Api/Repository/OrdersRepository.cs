@@ -12,8 +12,7 @@ public class OrdersRepository : IOrdersRepository
     {
         _dbContext = dbContext;
     }
-
-
+    
     public ICollection<Order> GetOrders()
     {
         return _dbContext.Orders.ToList();

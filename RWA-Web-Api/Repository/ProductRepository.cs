@@ -10,15 +10,37 @@ namespace RWA_Web_Api.Repository;
 public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    
+    readonly int _pageSize = 10;
     public ProductRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public ICollection<Product> GetProducts()
+    public PaginationResult<Product> GetProducts(int page, string? searchTerm)
     {
-        return _dbContext.Products.OrderBy(p => p.product_id).ToList();
+        var query = _dbContext.Products.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(p => p.title.Contains(searchTerm));
+        }
+
+        int totalItems = query.Count();
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
+
+        var products = query
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+
+        return new PaginationResult<Product>()
+        {
+            Page = page,
+            PageSize = _pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            Items = products
+        };
     }
 
     public Product? GetProductById(int productId)
@@ -44,13 +66,35 @@ public class ProductRepository : IProductRepository
         return _dbContext.Products.Count();
     }
 
-    public ICollection<Product> GetProductsLowOnStock(int limit)
+    public PaginationResult<Product> GetProductsLowOnStock(int limit, int page, string? searchTerm)
     {
-        return _dbContext.Products.Where(p => p.stock < limit).ToList();
+        var query = _dbContext.Products.Where(p => p.stock < limit);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(p => p.title.Contains(searchTerm));
+        }
+
+        int totalItems = query.Count();
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
+
+        var products = query
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+
+        return new PaginationResult<Product>()
+        {
+            Page = page,
+            PageSize = _pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            Items = products
+        };
     }
 
     public int GetNumberOfProductLowOnStock(int limit)
     {
-        return GetProductsLowOnStock(limit).Count();
+        return _dbContext.Products.Count(p => p.stock < limit);
     }
 }

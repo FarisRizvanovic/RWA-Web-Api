@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using RWA_Web_Api.Models;
 using RWA_Web_Api.Models.AdditionalModels;
 
@@ -6,7 +7,7 @@ namespace RWA_Web_Api.Interfaces;
 
 public interface IProductRepository
 {
-    ICollection<Product> GetProducts();
+    PaginationResult<Product> GetProducts(int page, string? searchTerm);
 
     Product? GetProductById(int productId);
     
@@ -16,7 +17,7 @@ public interface IProductRepository
 
     int GetProductCount();
 
-    ICollection<Product> GetProductsLowOnStock(int limit);
+    PaginationResult<Product> GetProductsLowOnStock(int limit, int page, string? searchTerm);
 
     int GetNumberOfProductLowOnStock(int limit);
     

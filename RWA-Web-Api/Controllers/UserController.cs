@@ -28,7 +28,7 @@ public class UserController : ControllerBase
     {
         if (page <= 0)
         {
-            return BadRequest("Invalid page");
+            return BadRequest("Invalid page number");
         }
 
         var paginationResult = _userRepository.GetUsers(page, searchTerm);
@@ -49,6 +49,6 @@ public class UserController : ControllerBase
             Items = users
         };
 
-        return Ok(users);
+        return Ok(result);
     }
 }

@@ -8,7 +8,7 @@ namespace RWA_Web_Api.Repository;
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    private int pageSize = 5;
+    private readonly int _pageSize = 5;
     public UserRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
@@ -29,17 +29,17 @@ public class UserRepository : IUserRepository
         }
 
         int totalItems = query.Count();
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
         var users = query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
             .ToList();
 
         return new PaginationResult<User>()
         {
             Page = page,
-            PageSize = pageSize,
+            PageSize = _pageSize,
             TotalItems = totalItems,
             TotalPages = totalPages,
             Items = users

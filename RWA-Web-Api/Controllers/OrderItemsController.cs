@@ -23,7 +23,7 @@ public class OrderItemsController : ControllerBase
         _mapper = mapper;
     }
     
-    [HttpGet("orderitems/{orderId}/{page}")]
+    [HttpGet("/orderitems/{orderId:int}/{page:int}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<OrderItemDto>))]
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]

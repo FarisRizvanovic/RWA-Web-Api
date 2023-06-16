@@ -8,7 +8,7 @@ namespace RWA_Web_Api.Repository;
 public class OrderItemsRepository : IOrderItemsRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly int pageSize = 5;
+    private readonly int _pageSize = 5;
 
     public OrderItemsRepository(ApplicationDbContext dbContext)
     {
@@ -21,17 +21,17 @@ public class OrderItemsRepository : IOrderItemsRepository
             oi => oi.order_id == orderId);
 
         int totalItems = query.Count();
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
         var orderItems = query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
             .ToList();
 
         return new PaginationResult<OrderItem>
         {
             Page = page,
-            PageSize = pageSize,
+            PageSize = _pageSize,
             TotalItems = totalItems,
             TotalPages = totalPages,
             Items = orderItems
