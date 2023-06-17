@@ -25,8 +25,10 @@ public class CategoryRepository : ICategoryRepository
     {
         var query = _dbContext.Categories.AsQueryable();
 
+        
         if (!string.IsNullOrEmpty(searchTerm))
         {
+            
             query = query.Where(c => c.name.Contains(searchTerm));
         }
 
@@ -57,7 +59,7 @@ public class CategoryRepository : ICategoryRepository
         var query = _dbContext.Categories.Include(c => c.Products)
             .Select(c => new CategoryWithItemNumber(c.category_id, c.name, c.Products.Count));
 
-        if (string.IsNullOrEmpty(searchTerm))
+        if (!string.IsNullOrEmpty(searchTerm))
         {
             query = _dbContext.Categories.Include(c => c.Products)
                 .Where(c => c.name.Contains(searchTerm))

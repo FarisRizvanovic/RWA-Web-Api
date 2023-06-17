@@ -235,7 +235,7 @@ public class ProductsController : ControllerBase
 
         var paginationResult = _productRepository.GetProductsLowOnStock(limit, page, searchTerm);
 
-        if (page > paginationResult.TotalPages)
+        if (page > paginationResult.TotalPages && paginationResult.TotalPages!=0)
         {
             return NotFound();
         }

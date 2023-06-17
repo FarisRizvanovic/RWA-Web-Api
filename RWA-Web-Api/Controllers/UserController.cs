@@ -33,7 +33,7 @@ public class UserController : ControllerBase
 
         var paginationResult = _userRepository.GetUsers(page, searchTerm);
 
-        if (page > paginationResult.TotalPages)
+        if (page > paginationResult.TotalPages && paginationResult.TotalPages!=0)
         {
             return NotFound();
         }

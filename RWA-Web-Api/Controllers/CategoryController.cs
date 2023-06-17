@@ -53,6 +53,11 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(400)]
     public IActionResult GetCategoriesWithNumberOfProducts(int page, string? searchTerm = "")
     {
+        if (page<0)
+        {
+            return BadRequest("Invalid page.");
+        }
+        
         var categoriesWithItemNumber = _categoryRepository.GetCategoriesWithNumberOfProducts(page, searchTerm);
     
         return Ok(categoriesWithItemNumber);
@@ -62,7 +67,7 @@ public class CategoryController : ControllerBase
     [HttpGet("/categories/{page}/{searchTerm?}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<CategoryDto>))]
     [ProducesResponseType(400)]
-    public IActionResult GetCategories(int page, string? searchTerm = "")
+    public IActionResult GetCategories(int page, string? searchTerm)
     {
         if (page <= 0)
         {
