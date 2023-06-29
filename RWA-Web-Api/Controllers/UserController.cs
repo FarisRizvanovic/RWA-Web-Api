@@ -51,4 +51,43 @@ public class UserController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPut("/user/update/{id}")]
+    public IActionResult UpdateUser(int id, [FromBody] UserDto updatedUser)
+    {
+        if (id!= updatedUser.id)
+        {
+            return BadRequest();
+        }
+
+        var existingUser = _userRepository.GetUserById(id);
+        if (existingUser == null)
+        {
+            return NotFound();
+        }
+        
+        existingUser.username = updatedUser.username;
+        existingUser.first_name = updatedUser.first_name;
+        existingUser.last_name = updatedUser.last_name;
+        existingUser.role = updatedUser.role;
+
+        _userRepository.UpdateUser(existingUser);
+
+        return Ok();
+    }
+
+    [HttpDelete("/user/delete/{id}")]
+    public IActionResult DeleteUser(int id)
+    {
+        var user = _userRepository.GetUserById(id);
+
+        if (user==null)
+        {
+            return NotFound();
+        }
+
+        var result = _userRepository.DeleteUser(user);
+
+        return result ? Ok() : NotFound("Something went wrong.");
+    }
 }

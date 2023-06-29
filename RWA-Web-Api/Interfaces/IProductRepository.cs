@@ -12,6 +12,8 @@ public interface IProductRepository
     PaginationResult<Product> GetProductsByCategory(int page, int categoryId, string? searchTerm);
 
     Product? GetProductById(int productId);
+
+    void UpdateProduct(Product product);
     
     void UpdateProductImage(string imageUri, int productId);
 
@@ -22,5 +24,7 @@ public interface IProductRepository
     PaginationResult<Product> GetProductsLowOnStock(int limit, int page, string? searchTerm);
 
     int GetNumberOfProductLowOnStock(int limit);
+
+    bool DeleteProduct(Product product);
 
 }

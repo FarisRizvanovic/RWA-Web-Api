@@ -37,4 +37,29 @@ public class OrderItemsRepository : IOrderItemsRepository
             Items = orderItems
         };
     }
+
+    public void AddOrderItem(OrderItemRequestModel orderItemRequest)
+    {
+        _dbContext.OrderItems.Add(new OrderItem()
+        {
+            product_id = orderItemRequest.ProductId,
+            quantity = orderItemRequest.Quantity,
+            price = orderItemRequest.Price
+        });
+
+        _dbContext.SaveChanges();
+    }
+
+    public bool DeleteOrderItem(OrderItem orderItem)
+    {
+        _dbContext.OrderItems.Remove(orderItem);
+        var affectedRows = _dbContext.SaveChanges();
+
+        return affectedRows != 0;
+    }
+
+    public OrderItem? GetOrderItemById(int id)
+    {
+        return _dbContext.OrderItems.Find(id);
+    }
 }

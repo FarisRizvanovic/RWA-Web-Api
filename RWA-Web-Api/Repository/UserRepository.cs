@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
 using RWA_Web_Api.Interfaces;
 using RWA_Web_Api.Models;
@@ -44,5 +45,24 @@ public class UserRepository : IUserRepository
             TotalPages = totalPages,
             Items = users
         };
+    }
+
+    public User? GetUserById(int id)
+    {
+        return _dbContext.Users.Find(id);
+    }
+
+    public void UpdateUser(User user)
+    {
+        _dbContext.Entry(user).State = EntityState.Modified;
+        _dbContext.SaveChanges();
+    }
+
+    public bool DeleteUser(User user)
+    {
+        _dbContext.Remove(user);
+        var affectedRows = _dbContext.SaveChanges();
+
+        return affectedRows != 0;
     }
 }

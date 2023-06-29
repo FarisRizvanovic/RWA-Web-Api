@@ -77,11 +77,19 @@ public class ProductRepository : IProductRepository
         return _dbContext.Products.Find(productId);
     }
 
+    public void UpdateProduct(Product product)
+    {
+        _dbContext.Entry(product).State = EntityState.Modified;
+        _dbContext.SaveChanges();
+    }
+
     public void UpdateProductImage(string imageUri, int productId)
     {
         var product = _dbContext.Products.Find(productId);
+        if (product == null) return;
         product.image = imageUri;
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
+
     }
 
     public void AddProduct(Product product)
@@ -125,5 +133,13 @@ public class ProductRepository : IProductRepository
     public int GetNumberOfProductLowOnStock(int limit)
     {
         return _dbContext.Products.Count(p => p.stock < limit);
+    }
+
+    public bool DeleteProduct(Product product)
+    {
+         _dbContext.Products.Remove(product);
+         var affectedRows = _dbContext.SaveChanges();
+         
+         return affectedRows != 0;
     }
 }

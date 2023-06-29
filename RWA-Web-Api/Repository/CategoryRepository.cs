@@ -16,6 +16,20 @@ public class CategoryRepository : ICategoryRepository
         _dbContext = dbContext;
     }
 
+    public bool AddCategory(string name, string description)
+    {
+        var query = _dbContext.Categories.Count(c => c.name == name);
+        if (query > 0)
+        {
+            return false;
+        }
+
+        _dbContext.Categories.Add(new Category() { name = name, description = description });
+        var affectedRows = _dbContext.SaveChanges();
+
+        return affectedRows != 0;
+    }
+
     public IEnumerable<Category> GetAllCategories()
     {
         return _dbContext.Categories.ToList();
@@ -25,10 +39,9 @@ public class CategoryRepository : ICategoryRepository
     {
         var query = _dbContext.Categories.AsQueryable();
 
-        
+
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            
             query = query.Where(c => c.name.Contains(searchTerm));
         }
 
@@ -49,6 +62,17 @@ public class CategoryRepository : ICategoryRepository
         };
     }
 
+    public Category? GetCategoryById(int id)
+    {
+        return _dbContext.Categories.Find(id);
+    }
+
+    public void UpdateCategory(Category category)
+    {
+        _dbContext.Categories.Entry(category).State = EntityState.Modified;
+        _dbContext.SaveChanges();
+    }
+
     public int GetCategoryCount()
     {
         return _dbContext.Categories.Count();
@@ -57,13 +81,25 @@ public class CategoryRepository : ICategoryRepository
     public PaginationResult<CategoryWithItemNumber> GetCategoriesWithNumberOfProducts(int page, string searchTerm)
     {
         var query = _dbContext.Categories.Include(c => c.Products)
-            .Select(c => new CategoryWithItemNumber(c.category_id, c.name, c.Products.Count));
+            .Select(c => new CategoryWithItemNumber()
+            {
+                category_id = c.category_id,
+                name = c.name,
+                product_count = c.Products.Count,
+                description = c.description
+            });
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
             query = _dbContext.Categories.Include(c => c.Products)
                 .Where(c => c.name.Contains(searchTerm))
-                .Select(c => new CategoryWithItemNumber(c.category_id, c.name, c.Products.Count));
+                .Select(c => new CategoryWithItemNumber()
+                {
+                    category_id = c.category_id,
+                    name = c.name,
+                    product_count = c.Products.Count,
+                    description = c.description
+                });
         }
 
         int totalItems = query.Count();
@@ -86,5 +122,13 @@ public class CategoryRepository : ICategoryRepository
     public bool DoesACategoryExist(int categoryId)
     {
         return _dbContext.Categories.Any(c => c.category_id == categoryId);
+    }
+
+    public bool DeleteCategory(Category category)
+    {
+        _dbContext.Categories.Remove(category);
+        var affectedRows = _dbContext.SaveChanges();
+
+        return affectedRows != 0;
     }
 }

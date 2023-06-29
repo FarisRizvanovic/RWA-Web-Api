@@ -19,8 +19,9 @@ public class ProductsController : ControllerBase
     private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
 
-    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper
-        mapper)
+    public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository,
+        ICategoryRepository categoryRepository, IMapper
+            mapper)
     {
         _logger = logger;
         _productRepository = productRepository;
@@ -106,35 +107,34 @@ public class ProductsController : ControllerBase
     /**
      * Updates the image of a product with a given id
      */
-    [HttpPut("/products/{id}/image")]
+    [HttpPut("/product/update/image/{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public IActionResult UpdateProductImage(int id, [FromForm] ImageFile? imageFile)
+    public IActionResult UpdateProductImage(int id, [FromForm] IFormFile? imageFile)
     {
         try
         {
             var product = _productRepository.GetProductById(id);
-            var file = imageFile.file;
             if (product == null)
             {
                 return NotFound("User with given id not found.");
             }
 
-            if (file == null)
+            if (imageFile == null)
             {
                 return BadRequest("Image not found.");
             }
 
             // Check if the uploaded file exists and is an image
-            if (file != null && file.Length > 0 && FileUtils.IsImage(file))
+            if (imageFile != null && imageFile.Length > 0 && FileUtils.IsImage(imageFile))
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 var filePath = Path.Combine("images", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    file.CopyToAsync(stream);
+                    imageFile.CopyToAsync(stream);
                 }
 
                 _productRepository.UpdateProductImage(filePath, id);
@@ -144,7 +144,7 @@ public class ProductsController : ControllerBase
                 return BadRequest("Invalid file or file format");
             }
 
-            return Ok();
+            return Ok(product.title);
         }
         catch (Exception ex)
         {
@@ -235,7 +235,7 @@ public class ProductsController : ControllerBase
 
         var paginationResult = _productRepository.GetProductsLowOnStock(limit, page, searchTerm);
 
-        if (page > paginationResult.TotalPages && paginationResult.TotalPages!=0)
+        if (page > paginationResult.TotalPages && paginationResult.TotalPages != 0)
         {
             return NotFound();
         }
@@ -282,4 +282,49 @@ public class ProductsController : ControllerBase
 
         return Ok(product);
     }
+
+    [HttpPut("/product/update/{id}")]
+    public IActionResult UpdateProduct(int id, [FromBody] ProductDto updatedProduct)
+    {
+        if (id != updatedProduct.product_id)
+        {
+            return BadRequest();
+        }
+
+        var existingProduct = _productRepository.GetProductById(id);
+
+        if (existingProduct == null)
+        {
+            return NotFound();
+        }
+
+        existingProduct.product_id = updatedProduct.product_id;
+        existingProduct.category_id = updatedProduct.category_id;
+        existingProduct.title = updatedProduct.title;
+        existingProduct.isNew = updatedProduct.isNew;
+        existingProduct.description = updatedProduct.description;
+        existingProduct.rating = updatedProduct.rating;
+        existingProduct.stock = updatedProduct.stock;
+        existingProduct.oldPrice = updatedProduct.oldPrice;
+        existingProduct.price = updatedProduct.price;
+
+        _productRepository.UpdateProduct(existingProduct);
+
+        return Ok();
+    }
+
+    [HttpDelete("/product/delete/{id}")]
+    public IActionResult DeleteProduct(int id)
+    {
+        var product = _productRepository.GetProductById(id);
+        if (product== null)
+        {
+            return NotFound();
+        }
+
+        var result = _productRepository.DeleteProduct(product);
+        
+        return result ? Ok() : BadRequest("Something went wrong.");
+    }
+    
 }

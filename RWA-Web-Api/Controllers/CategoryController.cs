@@ -25,6 +25,22 @@ public class CategoryController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpPost("/categories/add/{name}/{description?}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    public IActionResult AddCategory(string name, string description = "")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest();
+        }
+
+        var result = _categoryRepository.AddCategory(name, description);
+
+        return result ? Ok() : BadRequest("Category already exists.");
+    }
+    
+    
     [HttpGet("/categories/count")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetCategoryCount()
@@ -93,5 +109,43 @@ public class CategoryController : ControllerBase
         };
 
         return Ok(result);
+    }
+
+    [HttpPut("/category/update/{id}")]
+    public IActionResult UpdateCategory(int id, [FromBody] CategoryDto updatedCategory)
+    {
+        if (id != updatedCategory.category_id)
+        {
+            return BadRequest();
+        }
+
+        var existingCategory = _categoryRepository.GetCategoryById(id);
+
+        if (existingCategory== null)
+        {
+            return NotFound();
+        }
+
+        existingCategory.name = updatedCategory.name;
+        existingCategory.description = updatedCategory.description;
+        
+        _categoryRepository.UpdateCategory(existingCategory);
+
+        return Ok();
+    }
+
+    [HttpDelete("/category/delete/{id}")]
+    public IActionResult DeleteCategory(int id)
+    {
+        var category = _categoryRepository.GetCategoryById(id);
+
+        if (category == null)
+        {
+            return BadRequest();
+        }
+
+        var result = _categoryRepository.DeleteCategory(category);
+        
+        return result ? Ok() : BadRequest("Something went wrong.");
     }
 }

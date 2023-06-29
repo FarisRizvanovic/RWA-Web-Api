@@ -50,4 +50,19 @@ public class OrderItemsController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpDelete("/orderitem/delete/{id}")]
+    public IActionResult DeleteOrderItem(int id)
+    {
+        var orderItem = _orderItemsRepository.GetOrderItemById(id);
+        
+        if (orderItem==null)
+        {
+            return NotFound();
+        }
+
+        var result = _orderItemsRepository.DeleteOrderItem(orderItem);
+        
+        return result ? Ok() : BadRequest("Something went wrong.");
+    }
 }

@@ -5,7 +5,7 @@ namespace RWA_Web_Api.Controllers;
 
 [Controller]
 [Route("api/[controller]/[action]")]
-public class NewsletterController: ControllerBase
+public class NewsletterController : ControllerBase
 {
     private readonly ILogger<NewsletterController> _logger;
     private readonly INewsLetterRepository _newsLetterRepository;
@@ -30,6 +30,4 @@ public class NewsletterController: ControllerBase
 
         return result ? Ok("") : BadRequest("Email already exists.");
     }
-    
-    
 }
