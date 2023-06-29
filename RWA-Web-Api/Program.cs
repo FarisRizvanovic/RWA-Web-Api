@@ -25,6 +25,7 @@ builder.Services.AddScoped<IOrderItemsRepository, OrderItemsRepository>();
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<INewsLetterRepository, NewsletterRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 // solve object cycle problem
 // builder.Services.AddControllers()

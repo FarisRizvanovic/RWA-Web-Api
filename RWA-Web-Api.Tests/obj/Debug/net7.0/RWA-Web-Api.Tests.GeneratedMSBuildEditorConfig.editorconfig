@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = RWA_Web_Api.Tests
-build_property.ProjectDir = /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api.Tests/
+build_property.ProjectDir = /Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api.Tests/

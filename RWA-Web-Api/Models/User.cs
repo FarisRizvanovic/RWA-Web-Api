@@ -20,11 +20,9 @@ public partial class User
     [StringLength(255)]
     public string last_name { get; set; } = null!;
 
-    [StringLength(255)]
-    public string password_salt { get; set; } = null!;
+    public byte[] password_salt { get; set; } = null!;
 
-    [StringLength(255)]
-    public string password_hash { get; set; } = null!;
+    public byte[] password_hash { get; set; } = null!;
 
     [Column(TypeName = "enum('admin','user')")]
     public string role { get; set; } = null!;

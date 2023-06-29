@@ -17,6 +17,9 @@ public partial class Order
     [Precision(10, 2)]
     public decimal? total_amount { get; set; }
 
+    [Column(TypeName = "enum('pending','processing','shipped','delivered','cancelled','returned','refunded','on hold','completed')")]
+    public string status { get; set; } = null!;
+
     [Column(TypeName = "timestamp")]
     public DateTime? created_at { get; set; }
 

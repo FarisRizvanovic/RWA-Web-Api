@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj": {}
+    "/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj": {}
   },
   "projects": {
-    "/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj": {
+    "/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj",
+        "projectUniqueName": "/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj",
         "projectName": "RWA-Web-Api",
-        "projectPath": "/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj",
+        "projectPath": "/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/RWA-Web-Api.csproj",
         "packagesPath": "/Users/farisrizvanovic/.nuget/packages/",
-        "outputPath": "/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/obj/",
+        "outputPath": "/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/farisrizvanovic/.nuget/NuGet/NuGet.Config"
@@ -68,6 +68,10 @@
               "target": "Package",
               "version": "[7.0.5, )"
             },
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[6.31.0, )"
+            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[7.0.0, )"
@@ -75,6 +79,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[6.31.0, )"
             }
           },
           "imports": [

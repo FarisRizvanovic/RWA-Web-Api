@@ -101,9 +101,13 @@ public partial class ApplicationDbContext : DbContext
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            entity.HasOne(d => d.order).WithMany(p => p.OrderItems).HasConstraintName("orderitems_ibfk_1");
+            entity.HasOne(d => d.order).WithMany(p => p.OrderItems)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("orderitems_ibfk_1");
 
-            entity.HasOne(d => d.product).WithMany(p => p.OrderItems).HasConstraintName("orderitems_ibfk_2");
+            entity.HasOne(d => d.product).WithMany(p => p.OrderItems)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("orderitems_ibfk_2");
         });
 
         modelBuilder.Entity<Product>(entity =>
