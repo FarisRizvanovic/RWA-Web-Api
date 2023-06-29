@@ -6,11 +6,6 @@ public class CategoryWithItemNumber
     public int category_id { get; set; }
     public string name { get; set; } = null!;
     public int product_count { get; set; }
+    public string? description { get; set; }
     
-    public CategoryWithItemNumber(int categoryId, string name, int productCount)
-    {
-        category_id = categoryId;
-        this.name = name;
-        product_count = productCount;
-    }
 }

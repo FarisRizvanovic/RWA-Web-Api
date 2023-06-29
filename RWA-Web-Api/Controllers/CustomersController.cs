@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_Web_Api.Context;
@@ -12,18 +13,21 @@ public class CustomersController : ControllerBase
 {
     private readonly ILogger<CustomersController> _logger;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IMapper _mapper;
 
-    public CustomersController(ILogger<CustomersController> logger, ICustomerRepository customerRepository)
+    public CustomersController(ILogger<CustomersController> logger, ICustomerRepository customerRepository, IMapper mapper)
     {
         _logger = logger;
         _customerRepository = customerRepository;
+        _mapper = mapper;
     }
 
     [HttpGet("orderid={customerId}")]
-    [ProducesResponseType(200, Type = typeof(Customer))]
+    [ProducesResponseType(200, Type = typeof(CustomerDto))]
+    [ProducesResponseType(404)]
     public IActionResult GetCustomerById(int customerId)
     {
-        var customer = _customerRepository.GetCustomerById(customerId);
+        var customer = _mapper.Map<CustomerDto>(_customerRepository.GetCustomerById(customerId));
         Console.WriteLine("TEST " + customerId);
         if (customer == null)
         {

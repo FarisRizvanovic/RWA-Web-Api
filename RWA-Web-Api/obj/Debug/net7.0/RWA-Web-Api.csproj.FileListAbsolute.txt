@@ -5,6 +5,8 @@
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/RWA-Web-Api.runtimeconfig.json
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/RWA-Web-Api.dll
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/RWA-Web-Api.pdb
+/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/AutoMapper.dll
+/Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Humanizer.dll
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.AspNetCore.OpenApi.dll
 /Users/farisrizvanovic/RiderProjects/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.EntityFrameworkCore.dll
