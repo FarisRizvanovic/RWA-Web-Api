@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RWA_Web_Api.Context;
 using RWA_Web_Api.Interfaces;
@@ -7,6 +8,7 @@ using RWA_Web_Api.Models.AdditionalModels;
 
 namespace RWA_Web_Api.Controllers;
 
+[Authorize(Policy = "AdminOnly")]
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class OrderItemsController : ControllerBase

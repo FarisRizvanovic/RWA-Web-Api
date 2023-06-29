@@ -93,3 +93,9 @@
 /Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.IdentityModel.Logging.dll
 /Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.IdentityModel.Tokens.dll
 /Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.IdentityModel.Protocols.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Scrutor.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Swashbuckle.AspNetCore.Filters.dll
+/Users/farisrizvanovic/Desktop/RWA/RWA-Web-Api/RWA-Web-Api/bin/Debug/net7.0/Swashbuckle.AspNetCore.Filters.Abstractions.dll

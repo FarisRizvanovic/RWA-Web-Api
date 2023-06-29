@@ -31,6 +31,7 @@ public static class AuthUtil
         {
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim(ClaimTypes.Name, user.username),
+            new Claim(ClaimTypes.Role, user.role)
         };
         
         var appSettingToken = configuration.GetSection("AppSettings:Token").Value;

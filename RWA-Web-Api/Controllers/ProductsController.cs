@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
@@ -104,9 +105,11 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
+   
     /**
      * Updates the image of a product with a given id
-     */
+     */ 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPut("/product/update/image/{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
@@ -154,9 +157,11 @@ public class ProductsController : ControllerBase
         }
     }
 
+   
     /**
      * Adds a new product with image
-     */
+     */ 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPost("/products")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
@@ -214,6 +219,7 @@ public class ProductsController : ControllerBase
     /**
      * Get number of products
      */
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("/products/count")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductCount()
@@ -224,6 +230,7 @@ public class ProductsController : ControllerBase
     /**
      * Get all products that are low on stock
      */
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("/products/lowonstock/{limit}/{page}/{searchTerm?}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<ProductDto>))]
     public IActionResult GetProductsLowOnStock(int limit, int page, string? searchTerm)
@@ -257,6 +264,7 @@ public class ProductsController : ControllerBase
     /**
      * Get number of products low on stock
      */
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("/products/lowonstock/count/{limit}")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetProductsLowOnStockCount(int limit)
@@ -283,6 +291,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPut("/product/update/{id}")]
     public IActionResult UpdateProduct(int id, [FromBody] ProductDto updatedProduct)
     {
@@ -313,6 +322,7 @@ public class ProductsController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpDelete("/product/delete/{id}")]
     public IActionResult DeleteProduct(int id)
     {
