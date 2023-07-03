@@ -47,8 +47,9 @@ public static class AuthUtil
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddDays(1),
-            SigningCredentials = creds
+            Expires = DateTime.Now.AddDays(10),
+            SigningCredentials = creds,
+            
         };
 
         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();

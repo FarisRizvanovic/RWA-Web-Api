@@ -45,12 +45,20 @@ public class AuthRepository : IAuthRepository
         var response = new ServiceResponse<string>();
         var user = _dbContext.Users.FirstOrDefault(u => u.username.Equals(username));
 
-        var isPasswordHashCorrect = AuthUtil.VerifyPasswordHash(password, user.password_hash, user.password_salt);
-        
-        if (user == null || !isPasswordHashCorrect)
+        if (user == null)
         {
             response.Success = false;
             response.Message = "Username or password is incorrect.";
+            return response;
+        }
+
+        var isPasswordHashCorrect = AuthUtil.VerifyPasswordHash(password, user.password_hash, user.password_salt);
+        
+        if (!isPasswordHashCorrect)
+        {
+            response.Success = false;
+            response.Message = "Username or password is incorrect.";
+            return response;
         }
         else
         {

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RWA_Web_Api.Interfaces;
 
 namespace RWA_Web_Api.Controllers;
 
+[Authorize(Policy = "AdminOnly")]
 [Controller]
 [Route("api/[controller]/[action]")]
 public class NewsletterController : ControllerBase
@@ -16,6 +18,7 @@ public class NewsletterController : ControllerBase
         _newsLetterRepository = newsLetterRepository;
     }
 
+    [AllowAnonymous]
     [HttpPost("/newsletter/add/{email}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]

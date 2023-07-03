@@ -12,4 +12,6 @@ public interface IOrdersRepository
     Order? GetOrderById(int id);
 
     bool DeleteOrder(Order order);
+
+    ICollection<Order> GetCustomerOrders(int id);
 }

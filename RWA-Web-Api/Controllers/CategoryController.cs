@@ -10,6 +10,7 @@ using RWA_Web_Api.Models.AdditionalModels;
 
 namespace RWA_Web_Api.Controllers;
 
+[Authorize(Policy = "AdminOnly")]
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class CategoryController : ControllerBase
@@ -25,8 +26,7 @@ public class CategoryController : ControllerBase
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
-
-    [Authorize(Policy = "AdminOnly")]
+    
     [HttpPost("/categories/add/{name}/{description?}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
@@ -42,7 +42,6 @@ public class CategoryController : ControllerBase
         return result ? Ok() : BadRequest("Category already exists.");
     }
     
-    [Authorize(Policy = "AdminOnly")]
     [HttpGet("/categories/count")]
     [ProducesResponseType(200, Type = typeof(int))]
     public IActionResult GetCategoryCount()
@@ -51,6 +50,7 @@ public class CategoryController : ControllerBase
         return Ok(categoryCount);
     }
 
+    [AllowAnonymous]
     [HttpGet("/categories")]
     [ProducesResponseType(200, Type = typeof(CategoryDto))]
     [ProducesResponseType(400)]
@@ -65,8 +65,7 @@ public class CategoryController : ControllerBase
 
         return Ok(categories);
     }
-
-    [Authorize(Policy = "AdminOnly")]
+    
     [HttpGet("/categories/itemcount/{page}/{searchTerm?}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<CategoryWithItemNumber>))]
     [ProducesResponseType(400)]
@@ -81,9 +80,7 @@ public class CategoryController : ControllerBase
     
         return Ok(categoriesWithItemNumber);
     }
-
-
-    [Authorize(Policy = "AdminOnly")]
+    
     [HttpGet("/categories/{page}/{searchTerm?}")]
     [ProducesResponseType(200, Type = typeof(PaginationResult<CategoryDto>))]
     [ProducesResponseType(400)]
@@ -114,8 +111,7 @@ public class CategoryController : ControllerBase
 
         return Ok(result);
     }
-
-    [Authorize(Policy = "AdminOnly")]
+    
     [HttpPut("/category/update/{id}")]
     public IActionResult UpdateCategory(int id, [FromBody] CategoryDto updatedCategory)
     {
@@ -138,8 +134,7 @@ public class CategoryController : ControllerBase
 
         return Ok();
     }
-
-    [Authorize(Policy = "AdminOnly")]
+    
     [HttpDelete("/category/delete/{id}")]
     public IActionResult DeleteCategory(int id)
     {

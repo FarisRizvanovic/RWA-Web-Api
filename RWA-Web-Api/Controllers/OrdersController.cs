@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -44,13 +45,18 @@ public class OrdersController : ControllerBase
         return Ok(orders);
     }
 
+    [AllowAnonymous]
     [HttpPost("/orders/add")]
     public IActionResult AddOrderWithItems(OrderRequestModel orderRequest)
     {
+        
+        Console.WriteLine("NOVA NARUZDBA " + orderRequest.OrderItems.Count);
+        
         var order = new Order
         {
             customer_id = orderRequest.CustomerId,
             total_amount = orderRequest.TotalAmount,
+            status = orderRequest.Status
         };
 
         if (orderRequest.OrderItems != null && orderRequest.OrderItems.Any())
@@ -59,7 +65,7 @@ public class OrdersController : ControllerBase
                      {
                          product_id = orderItemRequest.ProductId,
                          quantity = orderItemRequest.Quantity,
-                         price = orderItemRequest.Price
+                         price = orderItemRequest.Price,
                      }))
             {
                 order.OrderItems.Add(orderItem);
@@ -84,5 +90,22 @@ public class OrdersController : ControllerBase
         var result = _ordersRepository.DeleteOrder(order);
             
         return result ? Ok() : BadRequest("Something went wrong.");
+    }
+
+    [Authorize]
+    [HttpGet("/orders/user")]
+    public IActionResult GetOrdersForLoggedInUser()
+    {
+        var user = HttpContext.User;
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var username = user.FindFirst(ClaimTypes.Name)?.Value;
+        var role = user.FindFirst(ClaimTypes.Role)?.Value;
+
+        var orders = _ordersRepository.GetCustomerOrders(int.Parse(userId!));
+
+        
+        
+        return Ok(orders);
     }
 }

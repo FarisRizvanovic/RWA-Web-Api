@@ -40,4 +40,11 @@ public class OrdersRepository : IOrdersRepository
 
         return affectedRows != 0;
     }
+
+    public ICollection<Order> GetCustomerOrders(int id)
+    {
+        var orders = _dbContext.Orders.Where(o => o.customer_id == id).ToList();
+
+        return orders;
+    }
 }
